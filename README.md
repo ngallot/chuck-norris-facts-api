@@ -69,3 +69,22 @@ a production-like environment. You can define multiple services, based on differ
     docker-compose up --build
     ```
 
+- Auto reload of the development server:
+As of now, if we make changes to our source code, we have to rebuild the docker container 
+(the docker engine will automatically detect that the COPY step needs to be re-run) and restart it.
+It would be convenient that the server restarts automatically when the source code has changed instead. As a non compiled code, python allows that easily,
+and usages of Docker volumes come handy here, to map directly the contents of your disk into the container.
+To enable this:
+    - Get the code for this feature:
+    ```bash
+    git checkout feature/server_auto_reload
+    ```
+    - Stop any running container (useful command:)
+    ```bash
+    docker kill $(docker ps -q)
+    ```
+    - Restart the service:
+    ```bash
+    docker-compose up --build
+    ``` 
+    - Now make any change to your source code (like adding a new blank line). You should see your server restarting automatically.
