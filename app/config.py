@@ -36,20 +36,50 @@ class AppConfig:
         return cls(**data)
 
 
+class LoggingConfig:
+
+    def __init__(self, level: str, format: str):
+        self._level = level
+        self._format = format
+
+    @property
+    def level(self):
+        return self._level
+
+    @property
+    def format(self):
+        return self._format
+
+    @classmethod
+    def from_config_section(cls, config: configparser.ConfigParser, section_name: str):
+        data = dict(
+            level=config.get(section=section_name, option='level'),
+            format=config.get(section=section_name, option='format')
+        )
+        return cls(**data)
+
+
 class ChuckNorrisApiConfig:
     _app_config: AppConfig
+    _logging_config: LoggingConfig
 
-    def __init__(self, app_config: AppConfig):
+    def __init__(self, app_config: AppConfig, logging_config: LoggingConfig):
         self._app_config = app_config
+        self._logging_config = logging_config
 
     @property
     def app_config(self) -> AppConfig:
         return self._app_config
 
+    @property
+    def logging_config(self) -> LoggingConfig:
+        return self._logging_config
+
     @classmethod
     def from_config(cls, config: configparser.ConfigParser):
         return cls(**dict(
-            app_config=AppConfig.from_config_section(config=config, section_name='APP')
+            app_config=AppConfig.from_config_section(config=config, section_name='APP'),
+            logging_config=LoggingConfig.from_config_section(config=config, section_name='LOGGING')
         ))
 
 
