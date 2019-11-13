@@ -55,5 +55,17 @@ Here, we propose to build a demo RESTful api in Python, using the framework Fast
     - Open a web browser to : localhost, and enjoy the Swagger doc!
     
     
-
+- Usage of docker-compose:
+When developing a service that connects to other services, docker-compose tool is extermely convenient to replicate
+a production-like environment. You can define multiple services, based on different docker images.
+    - Install: if you haven't installed docker-compose, follow the instructions [here](https://docs.docker.com/compose/install/).
+    - Switch to the branch feature/docker_compose_setup: 
+    ```bash
+    git status # if this is not empty, then handle your local changes
+    git checkout feature/docker_compose_setup
+    ```
+    Looks at the file docker-compose.yaml, everything is defined here. To launch the development server, run the command:
+    ```bash
+    docker-compose up --build
+    ```
 
