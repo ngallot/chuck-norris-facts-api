@@ -32,7 +32,7 @@ def get_all_facts() -> List[Tuple[int, str]]:
 
 
 def get_fact(fact_id: int) -> Optional[Tuple[int, str]]:
-    return _DB.get(fact_id, default=None)
+    return _DB.get(fact_id, None)
 
 
 def insert_fact(fact: str) -> Tuple[int, str]:
@@ -46,7 +46,7 @@ def insert_fact(fact: str) -> Tuple[int, str]:
 
 
 def update_fact(fact_id: int, new_fact: str) -> None:
-    fact = query_fact(fact_id)
+    fact = get_fact(fact_id)
     if not fact:
         raise ObjectNotFoundError(f'Fact with id {fact_id} does not exist')
     else:
@@ -54,7 +54,7 @@ def update_fact(fact_id: int, new_fact: str) -> None:
 
 
 def delete_fact(fact_id: int) -> None:
-    fact = query_fact(fact_id)
+    fact = get_fact(fact_id)
     if not fact:
         raise ObjectNotFoundError(f'Fact with id {fact_id} does not exist')
     else:
