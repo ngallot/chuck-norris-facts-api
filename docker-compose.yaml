@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     volumes:
     - ./app:/app/app
+    env_file:
+    - env-vars/local.env
     ports:
     - "80:80"
     restart:
