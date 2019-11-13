@@ -48,6 +48,7 @@ def update_fact(fact_id: int, new_fact: str) -> None:
     else:
         _DB[fact_id] = new_fact
 
+
 def delete_fact(fact_id: int) -> None:
     fact = query_fact(fact_id)
     if not fact:
