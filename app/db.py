@@ -1,11 +1,11 @@
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List, Dict
 from app.logging_utils import build_logger
 from app import config
 
 logger = build_logger(logger_name=__name__, config=config.logging_config)
 
 """Fake database to simulate calls to a real database. Here, database composed of a dictionary of id -> value"""
-_DB = {
+_DB: Dict[int, str] = {
     0: "Chuck Norris a déjà compté jusqu'à l'infini. Deux fois.",
     1: "Google, c'est le seul endroit où tu peux taper Chuck Norris...",
     2: "Certaines personnes portent un pyjama Superman. Superman porte un pyjama Chuck Norris.",
@@ -27,7 +27,11 @@ def next_id() -> int:
     return max(_DB.keys()) + 1
 
 
-def query_fact(fact_id: int) -> Optional[Tuple[int, str]]:
+def get_all_facts() -> List[Tuple[int, str]]:
+    return [(k, v) for k, v in _DB.items()]
+
+
+def get_fact(fact_id: int) -> Optional[Tuple[int, str]]:
     return _DB.get(fact_id, default=None)
 
 
