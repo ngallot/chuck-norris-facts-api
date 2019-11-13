@@ -137,3 +137,24 @@ To get the code implementing this feature:
     Dockerfile:         # We have added an extra step to copy the configuration files in the container
     docker-compose.yaml # We have added en env_file argument to specify to the docker engine which environment variables need to be made available to the container.
     ```
+
+- Logging
+Like said in the lecture, using print() statements everywhere in the code is quite dirty. There are much better things to do, starting by using
+the built-in library [logging](https://docs.python.org/3/library/logging.html)
+To check how this has been implemented:
+    - Checkout the corresponding branch:
+    ```bash
+    git checkout feature/logging
+    ```
+    The below files have been modified: 
+    ```bash
+    - config/local.ini          # Here, we added a new configuration section called [LOGGING] defining the logging level and formatting options.
+    - app/config.py             # Python code to parse the newly added LOGGING section
+    - app/logging_utils.py      # Code to build a new logger with correct formatting based on config values
+    - app/main.py               # Instantiate a logger in the main file and add a logging message after server start.
+    ```
+    
+    Once you've pulled those changes, your server should automatically restart, and you should see a nice logging message in the console: 
+    ```bash
+    2019-11-13 21:18:22,940:app.main:INFO:Chuck Norris Facts API local server started successfully.
+    ```
