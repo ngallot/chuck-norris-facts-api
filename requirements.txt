@@ -1,1 +1,1 @@
-fastapi==0.42.0
+fastapi[all]==0.42.0
