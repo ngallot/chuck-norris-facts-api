@@ -47,3 +47,11 @@ def update_fact(fact_id: int, new_fact: str) -> None:
         raise ObjectNotFoundError(f'Fact with id {fact_id} does not exist')
     else:
         _DB[fact_id] = new_fact
+
+def delete_fact(fact_id: int) -> None:
+    fact = query_fact(fact_id)
+    if not fact:
+        raise ObjectNotFoundError(f'Fact with id {fact_id} does not exist')
+    else:
+        _DB.pop(fact_id)
+
