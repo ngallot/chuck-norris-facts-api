@@ -158,3 +158,19 @@ To check how this has been implemented:
     ```bash
     2019-11-13 21:18:22,940:app.main:INFO:Chuck Norris Facts API local server started successfully.
     ```
+ 
+ - Database access
+ In this section, we implement a **fake** database. It's just an in-memory dictionary, and will be used like a real database for the purpose of this demo.
+ In a real case scenario, the database would be a real one, hosted on its own server, with CRUD operations implemented (via SQL queries for instance).
+ To get the code related to this implementation:
+    - Run the command: 
+    ```bash
+    git checkout feature/database_access
+    ```
+    
+    - Files changed:
+    ```bash
+    app/db.py
+    ```
+    In this file , we've added contents to the fake database, as well as methods to retrieve, insert, update and delete an objects.
+     
