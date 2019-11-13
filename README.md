@@ -88,3 +88,52 @@ To enable this:
     docker-compose up --build
     ``` 
     - Now make any change to your source code (like adding a new blank line). You should see your server restarting automatically.
+
+- App configuration and environment variables:
+Often, there are common configurations / settings for our application that we do not want to hardcode. It is especially useful when we use different environments.
+For example, if we connect to a database to retrieve data, we might want to make queries against different database instances if we are running the development code or the
+production code. Imagine you are implementing a DELETE endpoint in your API, connecting to a backend database. It means you will have to run a DELETE sql query against this database, while you are developing your feature.
+You obviously don't want to run this against the production database. Hence, it is useful to have a local environment, where the database connection string points to a local database,
+and a production environment for the deployed api, where the database connection string points to the production database. This is where configurations are useful.
+To get the code implementing this feature: 
+    - Run: 
+    ```bash
+    git checkout feature/configuration
+    ```
+    - Check the file: 
+    ```bash
+    config/local.ini
+    ```
+    For now, it contains only 1 section, named [APP], with basic info about our app. local.ini means that this is the configuration file
+    that we will use for local development. Other configuration files can come later, if we decide to manage multiple environments.
+    
+    - Check the code source code changes in the below files to understand how we have implemented the python code to parse this configuration file. 
+    It is using the configparser library, available in the python standard library:
+    ```bash
+    app/__init__.py # Notice that we are parsing the configuration file in __init__.py, to make it available anywhere in the code.
+    app/config.py   # Notice that in line 68, the code expects an environment variable named ENV.
+    app/main.py     # We are importing the parsed configuration, and we use it to create our FastApi object.
+    ```
+    
+    - Create a the environment variable file:
+    Because environment variables **should not be commited in git**, you have to manually create the environment variables directory and save the environment variable files inside.
+    To share this file, you can have several options:
+        - a separate GitHub repo
+        - a password manager allowing to share files
+        - a google drive like system
+        - a dedicated credentials management system
+        - etc...
+    
+    To create this file:
+    ```bash
+    mkdir env-vars
+    touch env-vars/local.env
+    echo ENV=local > env-vars/local.env
+    ```
+    You can also note that the .gitignore file has been updated to ignore all *.env files in the project.
+    
+    - Check the changes in the container setup to see how this configuration has been integrated:
+    ```bash
+    Dockerfile:         # We have added an extra step to copy the configuration files in the container
+    docker-compose.yaml # We have added en env_file argument to specify to the docker engine which environment variables need to be made available to the container.
+    ```
