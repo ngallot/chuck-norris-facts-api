@@ -278,6 +278,18 @@ Then in the tests, implemented in the class AppTests, we are testing 3 things:
 Those tests can be enhanced, and more expected behaviours can be tested. Of course, a test like the test_get_all_facts should never be written against a real database,
 because it will return all the contents... It's just for demo here :-)
 
+#### Next steps
+Time to write your own code now!
+For next week, I'm asking you to implement new endpoints to our API.
+- 1 endpoint POST, which takes a json containing a list of facts (strings) as input, and returns a list of database facts (id and fact) as output. Check out the [doc](https://fastapi.tiangolo.com/tutorial/body/) to help you,
+even though all BaseModel classes have already been written.
+
+- 1 endpoint PATCH, that will take a json containing database facts (id, fact), to be updated. It should return the updated objects.
+NB: the endpoint should output a clear error message and status code if an id not present in the database is given in the request.
+
+- 1 endpoint DELETE: to delete a list of facts given their ids.
+
+- Unit tests to go with those new endpoints!
 
 
   
