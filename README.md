@@ -223,5 +223,61 @@ There are quite a lot of changes in the code for this branch, let's have a close
     ```bash
     2019-11-14 07:27:25,311:uvicorn:INFO:('192.168.96.1', 54704) - "GET /facts/?ids=1&ids=11 HTTP/1.1" 200
     ```
-    
+
+#### Writing unit tests
+Now that we have implemented a few endpoints, it is now time to write unit tests. The main purpose of unit testing is to make sure that we are not breaking the code when making changes.
+changes. It also makes sure that the code is doing what we expect. Reading unit tests usually gives a good understanding of how the app should behave.
+To do that, we will use the built-in unittests library, along with pytest to run the tests.
+To check the code and run the unit tests:
+- Get the test branch: 
+```bash
+git checkout feature/unit_tests
+```
+- CHeck the files changed:
+```bash
+app/config.py
+test-requirements.txt
+tests/
+```
+- Create a dedicated virtual env for running tests:
+```bash
+virtualenv -p path/to/my/python3.7 venv_test
+source venv_test/bin/activate 
+```
+
+- Install the test requirements:
+```bash
+pip install -r test-requirements.txt
+```
+NB: it is interesting to note that you can reference other requirements.txt files within a requirements.txt. For instance, test-requirements.txt is referencing requirements.txt
+and just adding an extra dependency to pytest.
+
+- Run the tests:
+```bash
+export ENV=test && pytest tests/app_tests.py
+```
+This should result in 3 successful tests (eventually with warnings).
+
+- Zoom on the test code:
+Everything lies in the file _tests/app_tests.py_. Notice that we have modified the file app/config.py to allow an extra environment named 'test', with its own .ini file.
+Then, we use the test client provided by starlette framework (the web server framework FastApi is based on):
+```python
+from starlette.testclient import TestClient
+from app.main import app
+from app.models import ChuckNorrisFactDb
+
+client: TestClient = TestClient(app)
+```
+Here, we build a fake client that behaves exactly like the requests library. It manages directly requests against our endpoints, without needing to start a server and make
+http requests to it. It is then very convenient to test the whole application.
+Then in the tests, implemented in the class AppTests, we are testing 3 things:
+- The endpoint to retrieve a fact given its id returns a successful response when the id exists in DB
+- The same endpoint sends an 'not found' error when requesting an id which does not exist in DB
+- The endpoint to retrieve all facts returns the whole contents of the db.
+
+Those tests can be enhanced, and more expected behaviours can be tested. Of course, a test like the test_get_all_facts should never be written against a real database,
+because it will return all the contents... It's just for demo here :-)
+
+
+
   
