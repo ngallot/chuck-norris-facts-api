@@ -27,8 +27,9 @@ def next_id() -> int:
     return max(_DB.keys()) + 1
 
 
-def get_all_facts() -> List[Tuple[int, str]]:
-    return [(k, v) for k, v in _DB.items()]
+def get_facts(ids: Optional[List[int]] = None) -> Optional[List[Tuple[int, str]]]:
+    facts = [(k, v) for k, v in _DB.items()] if not ids else [get_fact(fact_id=id) for id in ids]
+    return [f for f in facts if f] if facts else None
 
 
 def get_fact(fact_id: int) -> Optional[Tuple[int, str]]:
