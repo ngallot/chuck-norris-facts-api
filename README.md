@@ -174,3 +174,54 @@ To check how this has been implemented:
     ```
     In this file , we've added contents to the fake database, as well as methods to retrieve, insert, update and delete an objects.
      
+#### Implementing the first api endpoints
+Once we have implemented our database access layer, we can now expose REST endpoints to interact with this database. The first endpoints we will implement are the GET endpoints,
+to retrieve resources from the database, given certain criteria.
+To retrieve the code implementing this feature, run the command:
+```bash
+git checkout feature/get_endpoints
+```
+
+There are quite a lot of changes in the code for this branch, let's have a closer look at what's new:
+-   Model classes: 
+    In the file _app/models.py_, we define the data model for our first endpoints. The classes are derived from Pydantic's BaseModel class.
+    We define here a base class for our chuck norris facts, containing the fact itself as a string, and a derived class containing also the database id.
+    The schema is very simple and straight forward. Note that when we define the class: 
+    ```python
+    class ChuckNorrisFactBase(BaseModel):
+        fact: str = Schema(default=..., title='fact', description='The Chuck Norris Fact')
+    ```
+    It is not mandatory to defne a Schema, as Pydantic will already interpret the type hints (: str) and handle data validation automatically. However, it is very useful to
+    define those Schema for the Swagger doc built by FastApi. You can check out your Swagger UI to see that the description is written in the generated doc.
+-   Database access:
+    Here, we've just defined methods to access to a list of facts, given their ids.
+-   Main file: _main.py_
+    Here we have implemented 2 new endpoints, to illustrate 2 usages of GET endpoints:
+    - A first endpoint querying the database for a given id:
+    ```python
+    @app.get('/fact/{fact_id}', description='Retrieve a Chuck Norris fact from its id',
+             response_model=models.ChuckNorrisFactDb, tags=['Facts'])
+    ``` 
+    There is only 1 mandatory argument, that according to RESTful apis design best practices, we should put directly in the url.
+    FastApi handles that easily, you just have to define it in the path of the operation and it will automatically be transmetted to the python function executing your operation.
+    Note that when we do not find the fact in database, we want to raise a clear HTTP exception with correct status code. So that clients connecting to our api will be able to handle this
+    status code according to their needs.
+    - A second endpoint querying the database for a list of ids:
+    ```python
+    @app.get('/facts/', description='Retrieve Chuck Norris facts from the database. Optional filter on the ids to '
+                                    'retrieve.', response_model=List[models.ChuckNorrisFactDb], tags=['Facts'])
+    ```
+    Here the design is different. We can provide an argument for this operation, but it is not given directly in the url. It is defined in the python function that handles the request:
+    ```python
+    def get_facts(ids: List[int] = Query(
+        default=None, title='ids', description='The list of ids to retrieve')) -> List[models.ChuckNorrisFactDb]:
+    ```
+    The _default=None_ means that the parameter ids, defined as a query parameter, means that this parameter is optional. When you check the Swagger UI doc, mandatory params have a red star next to them,
+    optional params don't.
+    NB: even if this parameter is defined in the python function handling the request, it's purely a FastApi trick. If you test the endpoint from the swagger doc directly, with ids 1 and 11,
+    you will see a log message like this (see how the ids are appended at the end of the url):
+    ```bash
+    2019-11-14 07:27:25,311:uvicorn:INFO:('192.168.96.1', 54704) - "GET /facts/?ids=1&ids=11 HTTP/1.1" 200
+    ```
+    
+  
