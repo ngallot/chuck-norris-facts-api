@@ -91,7 +91,7 @@ class EnvInterpolation(configparser.BasicInterpolation):
 
 
 class ConfigLoader:
-    _allowed_envs = ['local', 'development', 'staging', 'production']
+    _allowed_envs = ['test', 'local', 'development', 'staging', 'production']
 
     @staticmethod
     def _get_config_file_path():
@@ -101,7 +101,8 @@ class ConfigLoader:
         elif env.lower() not in ConfigLoader._allowed_envs:
             raise Exception(f"Unknown environment {env}. It should be one of {', '.join(ConfigLoader._allowed_envs)}")
         else:
-            return f'/app/config/{env}.ini'
+            lower_env = env.lower()
+            return 'tests/resources/config/test.ini' if lower_env =='test' else f'/app/config/{lower_env}.ini'
 
     @staticmethod
     def load_config(t: Type):
