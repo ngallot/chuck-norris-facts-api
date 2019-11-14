@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union, Tuple
 from fastapi import FastAPI, Query, HTTPException
 from starlette.responses import RedirectResponse
 import starlette.status as sc
@@ -27,17 +27,18 @@ def root():
                                 'retrieve.', response_model=List[models.ChuckNorrisFactDb])
 def get_facts(ids: List[int] = Query(
     default=None, title='ids', description='The list of ids to retrieve')) -> List[models.ChuckNorrisFactDb]:
-    chuck_norris_fact_db = lambda id, fact: models.ChuckNorrisFactDb.parse_obj(dict(id=id, fact=fact))
     try:
-        if ids:
-            facts = [(id, db.get_fact(fact_id=id)) for id in ids]
-            return [chuck_norris_fact_db(id=id, fact=fact) for (id, fact) in facts if fact is not None]
-        else:
-            return [chuck_norris_fact_db(id, fact) for (id, fact) in db.get_all_facts()]
+        facts: Optional[List[Tuple[int, str]]] = db.get_facts(ids=ids)
     except db.ObjectNotFoundError as err:
         raise HTTPException(status_code=sc.HTTP_404_NOT_FOUND, detail=str(err))
     except Exception as e:
         logger.error(e)
         raise HTTPException(status_code=sc.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    chuck_norris_fact_db = lambda id, fact: models.ChuckNorrisFactDb.parse_obj(dict(id=id, fact=fact))
+    if facts:
+        return [chuck_norris_fact_db(id=id, fact=fact) for (id, fact) in facts]
+    else:
+        raise HTTPException(status_code=sc.HTTP_404_NOT_FOUND,
+                            detail=f'Facts with ids {",".join(map(str, ids))} not found')
 
 
