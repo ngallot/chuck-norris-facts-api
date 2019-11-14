@@ -29,19 +29,18 @@ Here, we propose to build a demo RESTful api in Python, using the framework Fast
     pip install -r requirements.txt
     ```
     Depending on your IDE, you can now set up a proper development environment.
+- Check out the branch containing minimal working code: 
+```bash
+git checkout feature/minimal_working_code
+```
 
 - Implement a first API endpoint, in a Docker container:
-    - Switch to the branch feature/minimal_working_code
-    ```bash
-    git status # if this is not empty, then handle your local changes
-    git checkout feature/minimal_working_code
-    ```
     - Explore the code, essentially:
         - The structure of the Python code in the app folder
         - How we define the app object
         - The structure of the Dockerfile
     
-    - Build the docker container:
+    - Build the docker container (go [there](####troubleshooting) if this command is failing):
     ```bash
     docker build -t chuck-norris-facts-api:latest --no-cache .
     ```
@@ -53,7 +52,7 @@ Here, we propose to build a demo RESTful api in Python, using the framework Fast
     ```
     
     - Open a web browser to : localhost, and enjoy the Swagger doc!
-    
+
     
 #### Usage of docker-compose:
 When developing a service that connects to other services, docker-compose tool is extermely convenient to replicate
@@ -290,6 +289,19 @@ NB: the endpoint should output a clear error message and status code if an id no
 - 1 endpoint DELETE: to delete a list of facts given their ids.
 
 - Unit tests to go with those new endpoints!
+
+
+#### TROUBLESHOOTING
+
+##### docker commands failing
+If you have an error while running the docker command, it might be because of insufficient privileges. To fix this, apply
+the steps described [here](https://docs.docker.com/install/linux/linux-postinstall/) or [here](https://github.com/sindresorhus/guides/blob/master/docker-without-sudo.md)
+
+##### docker-compose commands failing
+If the docker-compose commands are failing, it might be:
+- Because of docker commands failing (docker-compose is using docker engine in the background), so see step 1.
+- Because your version of docker-compose is too old to support the docker-compose.yaml file version. To fix that, checkout the docs to install the latest
+version of docker-compose. I've already downgraded the docker-compose file version from 3.7 to 3.1 so it should work for most of your configurations.
 
 
   
