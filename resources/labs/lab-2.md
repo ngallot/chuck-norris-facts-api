@@ -134,32 +134,89 @@ Circle CI works with configuration files. Basically, this configuration file, in
 describes a list of actions to be taken by the machine executing it on Circle CI cloud. Let's build a minimal configuration, 
 just to enable setting up the CI for our project:
 
+- First: create a new branch called feature/minimal_ci
+```bash
+git checkout -b feature/minimal_ci
+```
+
+Then create a directory to host the circle ci configuration and create an empty config file:
+```bash
+mkdir .circleci
+touch .circleci/config.yml
+```
+
+Add the below contents to the .circleci/config.yml:
 ```yaml
 version: 2.0
-
 jobs:
 
   helloci:
     working_directory: ~/repo
     docker:
-      -image: google/cloud-sdk:slim
+    - image: google/cloud-sdk:slim
     steps:
-      - checkout
-      - run:
-          name: Say Hello
-          command: |
-            echo Hello Circle CI!
+    - checkout
+    - run:
+        name: Say Hello
+        command: |
+          echo Hello Circle CI!
 
 
-workflow:
+workflows:
   version: 2
-  say-hello:
+  say-hello-to-ci:
     jobs:
-      - helloci
+    - helloci
 ```
+
+We define here a dummy job, outputting "Hello Circle CI" on the console. It will first pull the google/cloud-sdk:slim Docker image, then 
+checkout our code, and finally run our Say Hello command.
+
+Then push your changes, and merge this branch to master:
+```bash
+git status
+git add .circleci
+git commit -m 'minimal working configuration'
+git push
+
+git checkout master
+git pull
+git merge feature/minimal_ci
+git push
+```
+
 
 ##### Setting up Circle CI to interact with your project
 The first step here, after creating an account on CircleCi, is to setup your project.
 
 For that, go to the CircleCI console, and click ADD PROJECTS. Select your GitHub chuck-norris-facts-api project, then go directly 
 to "start building". You can still read the instructions, but we will setup the configuration ourselves.
+
+<p align="center">
+  <img src="../img/setup_ci.gif" alt="Circle CI follow project" />
+</p>
+
+You're done! You can now start to enjoy automated builds!
+
+##### Writing a real Circle CI configuration file
+NOw that we've demonstrate how to write a dummy circle ci config file, triggering actions from GitHub, let's implement the steps we've ran manually to deploy our app.
+
+##### The unit tests step
+If we follow the git-flow process described in week 1, we know that:
+- we should not push code directly to protected branches (ie branches that are deployed in a proper environment)
+- we should run unit tests to check that we did not break anything in the code
+
+
+
+#### Next steps
+In this lab we've shown how to automate the deployment of our app, on a specific cloud infrastructure: Google Cloud Run.
+If you want to explore further, some ideas could be: 
+- Deploying a development and staging environment: because here we only have a production environment and it's clearly not enough for a real case scenario.
+- Deploy to another cloud infrastructure: Google Cloud Run is great for our needs, but could be limited for other use cases. You could want to 
+deploy somewhere else
+- Explore the possibility to add artifacts to your builds on Circle CI:
+    - tests reports
+    - test coverages
+    - ...
+ Have fun building!
+ 
