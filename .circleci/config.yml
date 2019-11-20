@@ -30,9 +30,17 @@ jobs:
           mkdir credentials
           echo $CI_JSON_CREDENTIALS_PRODUCTION >> credentials/ci-production.json
     - run:
+        name: Create environment variables file
+        command: |
+          mkdir env-vars
+          echo $ENV_VARS_PRODUCTION >> env-vars/production.env
+    - run:
         name: Authenticate gcloud
         command: |
           gcloud auth activate-service-account --key-file credentials/ci-production.json
+#    - run:
+#        name: Build local container
+
 
 workflows:
   version: 2
