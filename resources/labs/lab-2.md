@@ -276,19 +276,46 @@ We will use a dedicated service account to handle deployment tasks from the ci m
 - go to IAM et administration
 - on the left, go to service accounts
 - click create a service account
+- enter the details of your service account
+- select the *editor* role
+- click Continue, then create a json key and save it locally
 
 <p align="center">
   <img src="../img/create_ci_service_account.gif" alt="Create CI service account file" />
 </p>
 
-Once this is done and you've downloaded the json credentials file, put it in a folder called credentials at the root of your project:
+Once this is done and you've downloaded the json credentials file, put it in a folder called credentials at the root of your project
+and name it ci-production.json:
 ```bash
 mkdir credentials
-mv ~/Downloads/xxx-yourcredentialfile.json credentials/
+mv ~/Downloads/xxx-yourcredentialfile.json credentials/ci-production.json
 ```
+
 **DO NOT FORGET TO ADD THE CONTENTS OF THE CREDENTIALS FOLDER TO THE .gitignore FILE!!**<br />
 Otherwise anyone with access to your (probably open source) repo can
 do anything on your Google Cloud Platform account.
+
+
+You can now test the credentials file by trying to authenticate gcloud with it:
+```bash
+gcloud auth activate-service-account --key-file credentials/ci-production.json
+```
+
+
+Now let's start building from circle ci. As the credentials file is not commited on the repository, the CI machine
+won't have access to it. We need to find a mechanism to make it available to the CI. Luckily, Circle CI have utils for that, and we'll do
+it by exporting an environment variable to Circle CI, containing the contents of our json file.
+
+- First, copy the contents of your json file in your clipboard
+- Go the the Circle CI UI
+- In the JOBS section, click on the wheel next to your project
+- Click Environment variables, under BUILD SETTINGS
+- Click Add Variable, then name your variable CI_JSON_CREDENTIALS_PRODUCTION, and paste the contents of your json file in the value field.
+
+<p align="center">
+  <img src="../img/ci_creds_env.gif" alt="Create environment variable in circle ci" />
+</p>
+
 
 
 #### Next steps
