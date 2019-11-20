@@ -317,6 +317,8 @@ it by exporting an environment variable to Circle CI, containing the contents of
 </p>
 
 
+##### Writing the deployment job
+
 
 #### Next steps
 In this lab we've shown how to automate the deployment of our app, on a specific cloud infrastructure: Google Cloud Run.
