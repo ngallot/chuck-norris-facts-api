@@ -1,20 +1,29 @@
 version: 2.0
 jobs:
 
-  helloci:
+  unittests:
     working_directory: ~/repo
     docker:
-    - image: google/cloud-sdk:slim
+    - image: tiangolo/uvicorn-gunicorn-fastapi:python3.7
     steps:
     - checkout
     - run:
-        name: Say Hello
+        name: Install dependencies
         command: |
-          echo Hello Circle CI!
-
+          pip install -r test-requirements.txt
+    - run:
+        name: Run unit tests
+        command: |
+          export PYTHONPATH=${PYTHONPATH}:$(pwd)
+          export ENV=test
+          pytest tests/*.py
 
 workflows:
   version: 2
-  say-hello-to-ci:
+  test-build-deploy:
     jobs:
-    - helloci
+    - unittests:
+        filters:
+          branches:
+            ignore:
+            - master

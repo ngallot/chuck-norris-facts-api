@@ -206,6 +206,41 @@ If we follow the git-flow process described in week 1, we know that:
 - we should not push code directly to protected branches (ie branches that are deployed in a proper environment)
 - we should run unit tests to check that we did not break anything in the code
 
+Hence we should setup a ci job to run unit tests, on any branch that is not master (because master is only there to be deployed to cloud run).
+
+You can set up the below circle ci config file: 
+```yaml
+version: 2.0
+jobs:
+
+  unittests:
+    working_directory: ~/repo
+    docker:
+    - image: tiangolo/uvicorn-gunicorn-fastapi:python3.7
+    steps:
+    - checkout
+    - run:
+        name: Install dependencies
+        command: |
+          pip install -r test-requirements.txt
+    - run:
+        name: Run unit tests
+        command: |
+          export PYTHONPATH=${PYTHONPATH}:$(pwd)
+          export ENV=test
+          pytest tests/*.py
+
+workflows:
+  version: 2
+  test-build-deploy:
+    jobs:
+    - unittests:
+        filters:
+          branches:
+            ignore:
+            - master
+``` 
+
 
 
 #### Next steps
