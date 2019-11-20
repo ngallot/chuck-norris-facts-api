@@ -6,7 +6,8 @@ ADD requirements.txt ./requirements.txt
 RUN pip install --upgrade pip -r requirements.txt
 
 # Import config file
-COPY ./config /app/config
+ARG config_file
+COPY ./config/$config_file /app/config/$config_file
 
 # Install app
 COPY app /app/app
