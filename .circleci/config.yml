@@ -18,7 +18,3 @@ workflows:
   say-hello-to-ci:
     jobs:
     - helloci
-#        filters:
-#          branches:
-#            ignore:
-#            - master
