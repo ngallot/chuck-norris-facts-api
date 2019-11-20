@@ -80,4 +80,17 @@ If you go to the gcp console and check out your images in the cloud container re
   <img src="../img/gcloud_container_image.gif" alt="GCP Cloud Container Registry" />
 </p>
 
+We're almost there, we just now need to deploy our image into a working container. This is where we'll use Google Cloud Run: a serverless architecture to run
+docker images.
+
+```bash
+export SERVICE_NAME=chuck-norris-facts-api
+
+gcloud beta run deploy ${SERVICE_NAME} \
+    --image ${DOCKER_TAG} \
+    --region europe-west1 \
+    --platform managed \
+    --allow-unauthenticated \
+    --memory 1G
+```
 
