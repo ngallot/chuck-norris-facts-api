@@ -7,5 +7,15 @@ First, create a new project on the Google Cloud platform console by logging into
 
 After your project has been created, you should have something like this: 
 
-![GCP Console](../img/gcp_project.png "GCP Console")
+<p align="center">
+  <img src="../img/gcp_project.png" alt="GCP Console" />
+</p>
+
+#### Enabling necessary API's
+For this project to work properly, we need to activate several api's on Google Cloud Platform:
+
+- [Identity Access Management](https://cloud.google.com/iam/docs/reference/rest) (iam.googleapis.com)
+- [Cloud resource manager](https://cloud.google.com/resource-manager/docs/apis) (cloudresourcemanager.googleapis.com): 
+- [Google Container Registry]() (containerregistry.googleapis.com)
+- [Google Cloud Run](): (run.googleapis.com)
 
