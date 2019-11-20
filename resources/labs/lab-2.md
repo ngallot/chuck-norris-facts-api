@@ -286,7 +286,7 @@ Once this is done and you've downloaded the json credentials file, put it in a f
 mkdir credentials
 mv ~/Downloads/xxx-yourcredentialfile.json credentials/
 ```
-**DO NOT FORGET TO ADD THE CONTENTS OF THE CREDENTIALS FOLDER TO THE .gitignore FILE!!** 
+**DO NOT FORGET TO ADD THE CONTENTS OF THE CREDENTIALS FOLDER TO THE .gitignore FILE!!**<br />
 Otherwise anyone with access to your (probably open source) repo can
 do anything on your Google Cloud Platform account.
 
@@ -300,6 +300,7 @@ deploy somewhere else
 - Explore the possibility to add artifacts to your builds on Circle CI:
     - tests reports
     - test coverages
-    - ...
- Have fun building!
+    - ...<br />
+ 
+ Have fun building awesome things!
  
