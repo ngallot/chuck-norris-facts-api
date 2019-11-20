@@ -52,10 +52,12 @@ gcloud services enable iam.googleapis.com cloudresourcemanager.googleapis.com co
 
 ```
 
-#### Push our docker container to Google Container Registry
+#### Deploying our API
 Now that we've enabled the necessary apis, we can push our Docker container to Google Container Registry. It is a private Docker container registry,
 working like a private DockerHub registry.
 
+
+##### Pushing our docker container to Google Container Registry
 First, we need to authenticate Docker before pushing the image to our private registry. We can use gcloud for that: 
 ```bash
 gcloud auth configure-docker
@@ -66,7 +68,7 @@ because  will deploy the production environment. The :latest means that it's the
 ```bash
 export DOCKER_TAG=gcr.io/${PROJECT_ID}/cnf-api-production:latest
 
-docker build -t ${DOCKER_TAG} . # NB: this step is not mandatory if we've already built the image with another tag. We could just add a new tag to the image.
+docker build -t ${DOCKER_TAG} --build-arg config_file=production.ini . # NB: this step is not mandatory if we've already built the image with another tag. We could just add a new tag to the image.
 
 ```
 
@@ -80,17 +82,36 @@ If you go to the gcp console and check out your images in the cloud container re
   <img src="../img/gcloud_container_image.gif" alt="GCP Cloud Container Registry" />
 </p>
 
+##### Setting up a container on Google Cloud Run
 We're almost there, we just now need to deploy our image into a working container. This is where we'll use Google Cloud Run: a serverless architecture to run
 docker images.
 
+First, make sure that you've created the file env-vars/production.env, with contents ENV=production
+The command
+```bash
+env_vars=$(cat env-vars/production.env  | paste -sd "," -)
+```
+will read this file, and extract its contents, separated by commas. This is the format gcloud expects when setting environment variables for a cloud run container.
+
+
 ```bash
 export SERVICE_NAME=chuck-norris-facts-api
+export ENV_VARS=$(cat env-vars/production.env  | paste -sd "," -)
 
 gcloud beta run deploy ${SERVICE_NAME} \
     --image ${DOCKER_TAG} \
+    --set-env-vars=${ENV_VARS} \
     --region europe-west1 \
     --platform managed \
     --allow-unauthenticated \
     --memory 1G
 ```
+
+And voila! Our API is now available in the cloud, and it's not costing anything when not running. The gcloud command we just ran will
+output the url where our api has been deployed. You can test it by executing an http request:
+```bash
+export API_URL=xxx # the value of the deployed url, returned by the gcloud command.
+curl -X GET ${API_URL}/facts/ # will return all facts in our database
+```
+
 
