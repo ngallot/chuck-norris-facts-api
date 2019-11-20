@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        config_file: local.ini
     volumes:
     - ./app:/app/app
     env_file:
