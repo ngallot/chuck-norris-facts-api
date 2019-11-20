@@ -8,6 +8,8 @@ jobs:
       -image: google/cloud-sdk:slim
     steps:
     - checkout
+    - setup_remote_docker:
+        docker_layer_caching: true
     - run:
         name: Say Hello
         command: |
@@ -16,6 +18,10 @@ jobs:
 
 workflows:
   version: 2
-  say-hello:
+  say-hello-to-ci:
     jobs:
-      - helloci
+    - helloci
+#        filters:
+#          branches:
+#            ignore:
+#            - master
