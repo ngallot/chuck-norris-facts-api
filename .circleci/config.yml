@@ -8,8 +8,6 @@ jobs:
       -image: google/cloud-sdk:slim
     steps:
     - checkout
-    - setup_remote_docker:
-        docker_layer_caching: true
     - run:
         name: Say Hello
         command: |
