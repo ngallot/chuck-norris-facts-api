@@ -134,5 +134,32 @@ Circle CI works with configuration files. Basically, this configuration file, in
 describes a list of actions to be taken by the machine executing it on Circle CI cloud. Let's build a minimal configuration, 
 just to enable setting up the CI for our project:
 
+```yaml
+version: 2.0
+
+jobs:
+
+  helloci:
+    working_directory: ~/repo
+    docker:
+      -image: google/cloud-sdk:slim
+    steps:
+      - checkout
+      - run:
+          name: Say Hello
+          command: |
+            echo Hello Circle CI!
+
+
+workflow:
+  version: 2
+  say-hello:
+    jobs:
+      - helloci
+```
+
 ##### Setting up Circle CI to interact with your project
 The first step here, after creating an account on CircleCi, is to setup your project.
+
+For that, go to the CircleCI console, and click ADD PROJECTS. Select your GitHub chuck-norris-facts-api project, then go directly 
+to "start building". You can still read the instructions, but we will setup the configuration ourselves.
