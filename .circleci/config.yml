@@ -20,19 +20,19 @@ jobs:
 
   deploy:
     working_directory: ~/repo
-      docker:
-      - image: google/cloud-sdk:slim
-      steps:
-      - checkout
-      - run:
-          name: Create credentials file
-          command: |
-            mkdir credentials
-            echo $CI_JSON_CREDENTIALS_PRODUCTION >> credentials/ci-production.json
-      - run:
-          name: Authenticate gcloud
-          command: |
-            gcloud auth activate-service-account --key-file credentials/ci-production.json
+    docker:
+    - image: google/cloud-sdk:slim
+    steps:
+    - checkout
+    - run:
+        name: Create credentials file
+        command: |
+          mkdir credentials
+          echo $CI_JSON_CREDENTIALS_PRODUCTION >> credentials/ci-production.json
+    - run:
+        name: Authenticate gcloud
+        command: |
+          gcloud auth activate-service-account --key-file credentials/ci-production.json
 
 workflows:
   version: 2
