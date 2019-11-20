@@ -7,5 +7,5 @@ First, create a new project on the Google Cloud platform console by logging into
 
 After your project has been created, you should have something like this: 
 
-![GCP Console](resources/img/gcp_project.png "GCP Console")
+![GCP Console](../img/gcp_project.png "GCP Console")
 
