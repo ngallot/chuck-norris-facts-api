@@ -115,3 +115,24 @@ curl -X GET ${API_URL}/facts/ # will return all facts in our database
 ```
 
 
+#### Deploying changes automatically: continuous deployment
+In this section, we will see that we can do better than deploying our api manually. We will use
+Circle CI to help us doing it automatically for us.
+The very basic concept is that here, we've executed a list of commands manually to deploy our application.
+Why not doing it automatically? After all it's just a set of bash commands to run. We can do this with Circle CI, by describing the list
+of commands to be run when our GitHub repository changes, and they are automatically triggered.
+Behind the hood, when the repo changes, and a trigger has been configured to take actions, Circle CI will:
+- Start a VM in their own cloud
+- Execute a list of actions that we will have configured in the Circle CI configuration file
+- Stop the machine.
+
+And all this comes for free with the Circle CI basic plan.
+
+
+##### Making minimal configuration
+Circle CI works with configuration files. Basically, this configuration file, in the yaml format (same as docker-comopose file), 
+describes a list of actions to be taken by the machine executing it on Circle CI cloud. Let's build a minimal configuration, 
+just to enable setting up the CI for our project:
+
+##### Setting up Circle CI to interact with your project
+The first step here, after creating an account on CircleCi, is to setup your project.
