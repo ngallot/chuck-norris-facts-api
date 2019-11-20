@@ -317,6 +317,12 @@ it by exporting an environment variable to Circle CI, containing the contents of
 </p>
 
 
+The second thing we need to make available to the CI machine are the environment variables file.
+You can repeat the same process, by exporting the file env-vars/production.env as an environment variable named ENV_VARS_PRODUCTION in circle ci.
+
+Lastly, we need to export the PROJECT_ID environment variable in Circle CI.
+
+
 ##### Writing the deployment job
 
 
