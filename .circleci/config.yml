@@ -52,6 +52,7 @@ jobs:
     - run:
         name: Deploy Cloud Run Container
         command: |
+          export DOCKER_TAG=gcr.io/${GCP_PROJECT_ID}/cnf-api-production:latest
           export ENV_VARS=$(cat env-vars/production.env  | paste -sd "," -)
           gcloud beta run deploy chuck-norris-facts-api \
               --image ${DOCKER_TAG} \
