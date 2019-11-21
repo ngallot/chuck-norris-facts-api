@@ -41,7 +41,7 @@ jobs:
     - run:
         name: Debug docker
         command: |
-          systemctl start docker
+          service docker start
     - run:
         name: Build docker image
         command: |
