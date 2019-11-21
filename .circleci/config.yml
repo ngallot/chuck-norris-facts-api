@@ -21,15 +21,12 @@ jobs:
   deploy:
     working_directory: ~/repo
     docker:
-    - image: google/cloud-sdk:slim
-      auth:
-        username: armistech
-        password: $DOCKERHUB_PASSWORD
+    - image: google/cloud-sdk
     steps:
     - checkout
     - run:
         name: Create credentials file
-        command: |
+        command: |git d
           mkdir credentials
           echo $CI_JSON_CREDENTIALS_PRODUCTION >> credentials/ci-production.json
     - run:
@@ -55,11 +52,11 @@ workflows:
   version: 2
   test-build-deploy:
     jobs:
-    - unittests:
-        filters:
-          branches:
-            ignore:
-            - master
+#    - unittests:
+#        filters:
+#          branches:
+#            ignore:
+#            - master
 
     - deploy:
         filters:
