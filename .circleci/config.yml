@@ -41,7 +41,7 @@ jobs:
     - run:
         name: Debug docker
         command: |
-          dockerd
+          docker --version
     - run:
         name: Build docker image
         command: |
