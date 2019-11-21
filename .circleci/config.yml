@@ -39,6 +39,7 @@ jobs:
         name: Authenticate gcloud
         command: |
           gcloud auth activate-service-account --key-file credentials/ci-production.json
+          gcloud config set project ${GCP_PROJECT_ID}
     - run:
         name: Push docker image
         command: |
