@@ -49,6 +49,18 @@ jobs:
           gcloud auth activate-service-account --key-file credentials/ci-production.json
           gcloud auth configure-docker --quiet
           docker push ${DOCKER_TAG}
+    - run:
+        name: Deploy Cloud Run Container
+        command: |
+          export ENV_VARS=$(cat env-vars/production.env  | paste -sd "," -)
+          gcloud beta run deploy chuck-norris-facts-api \
+              --image ${DOCKER_TAG} \
+              --set-env-vars=${ENV_VARS} \
+              --region europe-west1 \
+              --platform managed \
+              --allow-unauthenticated \
+              --memory 1G
+
 
 
 workflows:
