@@ -201,11 +201,129 @@ You're done! You can now start to enjoy automated builds!
 ##### Writing a real Circle CI configuration file
 NOw that we've demonstrate how to write a dummy circle ci config file, triggering actions from GitHub, let's implement the steps we've ran manually to deploy our app.
 
-##### The unit tests step
+##### The unit tests job
 If we follow the git-flow process described in week 1, we know that:
 - we should not push code directly to protected branches (ie branches that are deployed in a proper environment)
 - we should run unit tests to check that we did not break anything in the code
 
+Hence we should setup a ci job to run unit tests, on any branch that is not master (because master is only there to be deployed to cloud run).
+
+You can set up the below circle ci config file, in a new branch feature/ci_jobs:
+```yaml
+version: 2.0
+jobs:
+
+  unittests:
+    working_directory: ~/repo
+    docker:
+    - image: tiangolo/uvicorn-gunicorn-fastapi:python3.7
+    steps:
+    - checkout
+    - run:
+        name: Install dependencies
+        command: |
+          pip install -r test-requirements.txt
+    - run:
+        name: Run unit tests
+        command: |
+          export PYTHONPATH=${PYTHONPATH}:$(pwd)
+          export ENV=test
+          pytest tests/*.py
+
+workflows:
+  version: 2
+  test-build-deploy:
+    jobs:
+    - unittests:
+        filters:
+          branches:
+            ignore:
+            - master
+``` 
+Once you've done that and pushed your changes, you should see something beautiful like this:
+
+<p align="center">
+  <img src="../img/ci_unit_tests.png" alt="Circle ci job unit tests" />
+</p>
+
+Next thing to do, is at the GitHub level: protect our master branch by enforcing that incoming pull requests MUST run the unit tests successfully:
+- Go to your repo page on GitHub
+- Go to the Settings tab
+- In the "Branches" section, click "Add rule" next to the Branch protection rules
+- Then protect the master branch by: 
+    - Clicking "Require pull requests review before merging
+    - And to include the CI step: click Require status checks to pass before merging, and click ci/circleci: unittests. Then click save.
+    
+With this setup, you're now sure that:
+- Any code pushed to the master branch will be submitted to a code review, via a pull request
+- Any incoming pull request on master will have to pass the unit tests
+
+In other words, you can now sleep peacefully, no one will mess up with your api.
+
+##### The deployment job
+Now that we've set up a CI job to handle the run of the unit tests, we can do the same to deploy our app from the master branch.
+
+One problem here: at the beginning of the manual deployment step, we had to manually authenticate the gcloud command line by running
+```bash
+gcloud auth login
+```
+The we were redirected to a web browser to validate our credentials. We can't automate that. Oh, wait, yes we actually can, through [service accounts](https://cloud.google.com/iam/docs/understanding-service-accounts).
+
+###### Setting up the circleci service account
+We will use a dedicated service account to handle deployment tasks from the ci machine. For that:
+- go to the google cloud platform console
+- on the upper left, click on the 3 bars to show the menu
+- go to IAM et administration
+- on the left, go to service accounts
+- click create a service account
+- enter the details of your service account
+- select the *editor* role
+- click Continue, then create a json key and save it locally
+
+<p align="center">
+  <img src="../img/create_ci_service_account.gif" alt="Create CI service account file" />
+</p>
+
+Once this is done and you've downloaded the json credentials file, put it in a folder called credentials at the root of your project
+and name it ci-production.json:
+```bash
+mkdir credentials
+mv ~/Downloads/xxx-yourcredentialfile.json credentials/ci-production.json
+```
+
+**DO NOT FORGET TO ADD THE CONTENTS OF THE CREDENTIALS FOLDER TO THE .gitignore FILE!!**<br />
+Otherwise anyone with access to your (probably open source) repo can
+do anything on your Google Cloud Platform account.
+
+
+You can now test the credentials file by trying to authenticate gcloud with it:
+```bash
+gcloud auth activate-service-account --key-file credentials/ci-production.json
+```
+
+
+Now let's start building from circle ci. As the credentials file is not commited on the repository, the CI machine
+won't have access to it. We need to find a mechanism to make it available to the CI. Luckily, Circle CI have utils for that, and we'll do
+it by exporting an environment variable to Circle CI, containing the contents of our json file.
+
+- First, copy the contents of your json file in your clipboard
+- Go the the Circle CI UI
+- In the JOBS section, click on the wheel next to your project
+- Click Environment variables, under BUILD SETTINGS
+- Click Add Variable, then name your variable CI_JSON_CREDENTIALS_PRODUCTION, and paste the contents of your json file in the value field.
+
+<p align="center">
+  <img src="../img/ci_creds_env.gif" alt="Create environment variable in circle ci" />
+</p>
+
+
+The second thing we need to make available to the CI machine are the environment variables file.
+You can repeat the same process, by exporting the file env-vars/production.env as an environment variable named ENV_VARS_PRODUCTION in circle ci.
+
+Lastly, we need to export the PROJECT_ID environment variable in Circle CI.
+
+
+##### Writing the deployment job
 
 
 #### Next steps
@@ -217,6 +335,7 @@ deploy somewhere else
 - Explore the possibility to add artifacts to your builds on Circle CI:
     - tests reports
     - test coverages
-    - ...
- Have fun building!
+    - ...<br />
+ 
+ Have fun building awesome things!
  

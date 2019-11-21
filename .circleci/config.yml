@@ -1,20 +1,81 @@
 version: 2.0
 jobs:
 
-  helloci:
+  unittests:
     working_directory: ~/repo
     docker:
-    - image: google/cloud-sdk:slim
+    - image: tiangolo/uvicorn-gunicorn-fastapi:python3.7
     steps:
     - checkout
     - run:
-        name: Say Hello
+        name: Install dependencies
         command: |
-          echo Hello Circle CI!
+          pip install -r test-requirements.txt
+    - run:
+        name: Run unit tests
+        command: |
+          export PYTHONPATH=${PYTHONPATH}:$(pwd)
+          export ENV=test
+          pytest tests/*.py
+
+  deploy:
+    working_directory: ~/repo
+    docker:
+    - image: google/cloud-sdk
+    steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: Create credentials file
+        command: |
+          mkdir credentials
+          echo $CI_JSON_CREDENTIALS_PRODUCTION >> credentials/ci-production.json
+    - run:
+        name: Create environment variables file
+        command: |
+          mkdir env-vars
+          echo $ENV_VARS_PRODUCTION >> env-vars/production.env
+    - run:
+        name: Authenticate gcloud
+        command: |
+          gcloud auth activate-service-account --key-file credentials/ci-production.json
+          gcloud config set project ${GCP_PROJECT_ID}
+    - run:
+        name: Push docker image
+        command: |
+          export DOCKER_TAG=gcr.io/${GCP_PROJECT_ID}/cnf-api-production:latest
+          docker build . \
+            -t ${DOCKER_TAG} \
+            --build-arg config_file=production.ini
+          gcloud auth activate-service-account --key-file credentials/ci-production.json
+          gcloud auth configure-docker --quiet
+          docker push ${DOCKER_TAG}
+    - run:
+        name: Deploy Cloud Run Container
+        command: |
+          export DOCKER_TAG=gcr.io/${GCP_PROJECT_ID}/cnf-api-production:latest
+          export ENV_VARS=$(cat env-vars/production.env  | paste -sd "," -)
+          gcloud beta run deploy chuck-norris-facts-api \
+              --image ${DOCKER_TAG} \
+              --set-env-vars=${ENV_VARS} \
+              --region europe-west1 \
+              --platform managed \
+              --allow-unauthenticated \
+              --memory 1G
+
 
 
 workflows:
   version: 2
-  say-hello-to-ci:
+  test-build-deploy:
     jobs:
-    - helloci
+    - unittests:
+        filters:
+          branches:
+            ignore:
+            - master
+    - deploy:
+        filters:
+          branches:
+            only:
+            - master
