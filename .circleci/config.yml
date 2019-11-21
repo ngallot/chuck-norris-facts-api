@@ -47,7 +47,7 @@ jobs:
         command: |
           gcloud auth configure-docker --quiet
           export DOCKER_TAG=gcr.io/${GCP_PROJECT_ID}/cnf-api-production:latest
-          docker build . -t ${DOCKER_TAG} --build-arg config_file=production.ini
+          sudo docker build . -t ${DOCKER_TAG} --build-arg config_file=production.ini
 
 
 workflows:
