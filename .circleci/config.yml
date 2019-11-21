@@ -35,21 +35,17 @@ jobs:
           mkdir env-vars
           echo $ENV_VARS_PRODUCTION >> env-vars/production.env
     - run:
-        name: Authenticate gcloud
-        command: |
-          gcloud auth activate-service-account --key-file credentials/ci-production.json
-    - run:
-        name: Debug docker
-        command: |
-          service docker start
-    - run:
         name: Build docker image
         command: |
           gcloud auth configure-docker --quiet
           export DOCKER_TAG=gcr.io/${GCP_PROJECT_ID}/cnf-api-production:latest
           docker build . \
-#            -t ${DOCKER_TAG} \
-#            --build-arg config_file=production.ini
+            -t ${DOCKER_TAG} \
+            --build-arg config_file=production.ini
+    - run:
+        name: Authenticate gcloud
+        command: |
+          gcloud auth activate-service-account --key-file credentials/ci-production.json
 
 
 workflows:
