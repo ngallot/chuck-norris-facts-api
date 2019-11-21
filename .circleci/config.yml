@@ -21,7 +21,10 @@ jobs:
   deploy:
     working_directory: ~/repo
     docker:
-    - image: google/cloud-sdk
+    - image: google/cloud-sdk:slim
+      auth:
+        username: armistech
+        password: $DOCKERHUB_PASSWORD
     steps:
     - checkout
     - run:
