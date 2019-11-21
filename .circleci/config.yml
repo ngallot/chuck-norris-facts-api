@@ -69,14 +69,13 @@ workflows:
   version: 2
   test-build-deploy:
     jobs:
-#    - unittests:
-#        filters:
-#          branches:
-#            ignore:
-#            - master
-
-    - deploy:
+    - unittests:
         filters:
           branches:
             ignore:
+            - master
+    - deploy:
+        filters:
+          branches:
+            only:
             - master
