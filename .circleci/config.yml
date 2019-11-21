@@ -39,6 +39,10 @@ jobs:
         command: |
           gcloud auth activate-service-account --key-file credentials/ci-production.json
     - run:
+        name: Debug docker
+        command: |
+          dockerd
+    - run:
         name: Build docker image
         command: |
           gcloud auth configure-docker --quiet
